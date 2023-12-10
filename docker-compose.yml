@@ -9,9 +9,8 @@ services:
     ports:
       - "${HOST_MACHINE_UNSECURE_HOST_PORT}:${CONTAINER_HTTP_PORT}"
       - "${HOST_MACHINE_SECURE_HOST_PORT}:${CONTAINER_HTTPS_PORT}"
-    links:
-      - database
     volumes:
+      # - ${DOCUMENT_ROOT-./www}:/var/www/html
       - ${DOCUMENT_ROOT-./www}:/var/www/html:rw
       - ${PHP_INI-./config/php/php.ini}:/usr/local/etc/php/php.ini
       - ${SSL_DIR-./config/ssl}:/etc/apache2/ssl/
@@ -28,15 +27,20 @@ services:
       HOST_MACHINE_MYSQL_PORT: ${HOST_MACHINE_MYSQL_PORT}
       XDEBUG_CONFIG: "client_host=host.docker.internal remote_port=${XDEBUG_PORT}"
       WORDPRESS_HOST_PORT: ${HOST_MACHINE_WP_PORT}
+      WORDPRESS_DB_NAME: ${WP_DB_NAME}
+      WORDPRESS_DB_HOST: ${WP_DB_HOST}
     extra_hosts:
       - "host.docker.internal:host-gateway"
+    # links:
+    #   - database
   database:
     build:
       context: "./bin/${DATABASE}"
     container_name: "${COMPOSE_PROJECT_NAME}-${DATABASE}"
+    hostname: "${COMPOSE_PROJECT_NAME}-${DATABASE}" 
     restart: "always"
     ports:
-      - "${HOST_IP}:${HOST_MACHINE_MYSQL_PORT}:${CONTAINER_MYSQL_PORT}"
+      - "${HOST_MACHINE_IP}:${HOST_MACHINE_MYSQL_PORT}:${CONTAINER_MYSQL_PORT}"
     volumes:
       - ${MYSQL_INITDB_DIR-./config/initdb}:/docker-entrypoint-initdb.d
       - ${MYSQL_DATA_DIR-./data/mysql}:/var/lib/mysql
@@ -50,8 +54,6 @@ services:
     image: phpmyadmin
     container_name: "${COMPOSE_PROJECT_NAME}-phpmyadmin"
     restart:  "always"
-    links:
-      - database
     environment:
       PMA_HOST: database
       PMA_PORT: ${CONTAINER_MYSQL_PORT}
@@ -68,29 +70,32 @@ services:
     volumes:
       - /sessions
       - ${PHP_INI-./config/php/php.ini}:/usr/local/etc/php/conf.d/php-phpmyadmin.ini
+    # links:
+    #   - database
   redis:
     container_name: "${COMPOSE_PROJECT_NAME}-redis"
     restart:  "always"
     image: redis:latest
     ports:
-      - "${HOST_IP}:${HOST_MACHINE_REDIS_PORT}:${CONTAINER_REDIS_PORT}"
+      - "${HOST_MACHINE_IP}:${HOST_MACHINE_REDIS_PORT}:${CONTAINER_REDIS_PORT}"
   wordpress:
     container_name: "${COMPOSE_PROJECT_NAME}-wordpress"
     restart:  "always"
     image: wordpress:latest
     ports:
-      - "${HOST_IP}:${HOST_MACHINE_WP_PORT}:${CONTAINER_HTTP_PORT}"
+      - "${HOST_MACHINE_IP}:${HOST_MACHINE_WP_PORT}:${CONTAINER_HTTP_PORT}"
     environment:
-      WORDPRESS_DB_HOST: database
+      WORDPRESS_DB_HOST: ${WP_DB_HOST}:${HOST_MACHINE_MYSQL_PORT}
       WORDPRESS_DB_NAME: ${WP_DB_NAME}
-      WORDPRESS_DB_USER: ${MYSQL_USER}
-      WORDPRESS_DB_PASSWORD: ${MYSQL_PASSWORD}
+      WORDPRESS_TABLE_PREFIX: ${WP_TABLE_PREFIX}
+      WORDPRESS_DB_USER: root
+      WORDPRESS_DB_PASSWORD: ${MYSQL_ROOT_PASSWORD}
     depends_on:
       - database
-    links:
-      - database
     volumes:
-      - ./config/php.conf.ini:/usr/local/etc/php/conf.d/conf.ini
-      - ./wp-app:/var/www/html
-      #- ./wp-data/wp-content:/var/www/html/wp-content 
-      #- ./wp-data/wp-config:/var/www/html/wp-config.php
+      - ./wp-app:/var/www/html:rw
+      # - ./wp-data/wp-content:/var/www/html/wp-content:rw 
+      # - ./config/php.conf.ini:/usr/local/etc/php/conf.d/conf.ini
+      # - ./wp-data/wp-config:/var/www/html/wp-config.php
+    # links:
+    #   - database
