@@ -59,7 +59,7 @@
                                 <li><a href="/test_db.php">Test DB Connection with mysqli</a></li>
                                 <li><a href="/test_db_pdo.php">Test DB Connection with PDO</a></li>
                                 <li><a href="http://localhost:<? print $_ENV['WORDPRESS_HOST_PORT']; ?>">Wordpress Container</a></li>
-                                <li><a href="/wp">Wordpress</a></li>
+                                <li><a href="projects/wp">Wordpress</a></li>
                             </ul>
                         </div>
                     </div>
