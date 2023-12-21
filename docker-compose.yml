@@ -17,7 +17,7 @@ services:
       - ${VHOSTS_DIR-./config/vhosts}:/etc/apache2/sites-enabled
       - ${LOG_DIR-./logs/apache2}:/var/log/apache2
       - ${XDEBUG_LOG_DIR-./logs/xdebug}:/var/log/xdebug
-      - ${PROJECTS_DIRECTORY-./projects}:/var/www/html/projects
+      # - ${PROJECTS_DIRECTORY-./projects}:/var/www/html/projects
       # DIRECTORY IS MOUNTED AS rw BY DEFAULT (rw - ro)
       # w-if-proper-permissions-are-set
       # - ${WWW2-./www2}:/var
@@ -41,7 +41,7 @@ services:
     build:
       context: "./bin/${DATABASE}"
     container_name: "${COMPOSE_PROJECT_NAME}-${DATABASE}"
-    hostname: "${COMPOSE_PROJECT_NAME}-${DATABASE}" 
+    hostname: "${COMPOSE_PROJECT_NAME}-${DATABASE}"
     restart: "always"
     ports:
       - "${HOST_MACHINE_IP}:${HOST_MACHINE_MYSQL_PORT}:${CONTAINER_MYSQL_PORT}"
@@ -57,7 +57,7 @@ services:
   phpmyadmin:
     image: phpmyadmin
     container_name: "${COMPOSE_PROJECT_NAME}-phpmyadmin"
-    restart:  "always"
+    restart: "always"
     environment:
       PMA_HOST: database
       PMA_PORT: ${CONTAINER_MYSQL_PORT}
@@ -78,13 +78,13 @@ services:
     #   - database
   redis:
     container_name: "${COMPOSE_PROJECT_NAME}-redis"
-    restart:  "always"
+    restart: "always"
     image: redis:latest
     ports:
       - "${HOST_MACHINE_IP}:${HOST_MACHINE_REDIS_PORT}:${CONTAINER_REDIS_PORT}"
   wordpress:
     container_name: "${COMPOSE_PROJECT_NAME}-wordpress"
-    restart:  "always"
+    restart: "always"
     image: wordpress:latest
     ports:
       - "${HOST_MACHINE_IP}:${HOST_MACHINE_WP_PORT}:${CONTAINER_HTTP_PORT}"

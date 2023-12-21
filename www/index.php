@@ -28,24 +28,27 @@
                         <hr>
                         <div class="content">
                             <ul>
-                                <li><?= apache_get_version(); ?></li>
-                                <li>PHP <?= phpversion(); ?></li>
+                                <li><?=apache_get_version();?></li>
+                                <li>PHP <?=phpversion();?></li>
                                 <li>
                                     <?php
-                                    $link = mysqli_connect("database", "root", $_ENV['MYSQL_ROOT_PASSWORD'], null);
+$link = mysqli_connect("database", "root", $_ENV['MYSQL_ROOT_PASSWORD'], null);
 
 /* check connection */
-                                    if (mysqli_connect_errno()) {
-                                        printf("MySQL connecttion failed: %s", mysqli_connect_error());
-                                    } else {
-                                        /* print server version */
-                                        printf("MySQL Server %s", mysqli_get_server_info($link));
-                                    }
-                                    /* close connection */
-                                    mysqli_close($link);
-                                    ?>
+if (mysqli_connect_errno()) {
+    printf("MySQL connecttion failed: %s", mysqli_connect_error());
+} else {
+    /* print server version */
+    printf("MySQL Server %s", mysqli_get_server_info($link));
+}
+/* close connection */
+mysqli_close($link);
+?>
                                 </li>
-                                <li>$_ENV<ul><? foreach(getenv() as $key=>$val) echo "<li>".$key."::".$val."</li>"; ?></ul></li>
+                                <li>$_ENV<ul><?foreach (getenv() as $key => $val) {
+    echo "<li>" . $key . "::" . $val . "</li>";
+}
+?></ul></li>
                             </ul>
                         </div>
                     </div>
@@ -55,11 +58,11 @@
                         <div class="content">
                             <ul>
                                 <li><a href="/phpinfo.php">phpinfo()</a></li>
-                                <li><a href="http://localhost:<? print $_ENV['PMA_PORT']; ?>">phpMyAdmin</a></li>
+                                <li><a href="http://localhost:<?print $_ENV['PMA_PORT'];?>">phpMyAdmin</a></li>
                                 <li><a href="/test_db.php">Test DB Connection with mysqli</a></li>
                                 <li><a href="/test_db_pdo.php">Test DB Connection with PDO</a></li>
-                                <li><a href="http://localhost:<? print $_ENV['WORDPRESS_HOST_PORT']; ?>">Wordpress Official Image</a></li>
-                                <li><a href="projects/wp">Wordpress</a></li>
+                                <li><a href="http://localhost:<?print $_ENV['WORDPRESS_HOST_PORT'];?>">Wordpress Official Image</a></li>
+                                <li><a href="projects/">Projects</a></li>
                             </ul>
                         </div>
                     </div>
